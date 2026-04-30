@@ -48,6 +48,7 @@ def markdown_report(result: SimulationResult, diagnostics: list[RuleDiagnostic])
 - Do not enter personal, confidential, financial, health, biometric, or sensitive data.
 
 ## Citations
+- ai-real-economy-bottleneck-simulator contributors. (2026). "AI Real-Economy Bottleneck Simulator" (v0.1.0). Zenodo. DOI: 10.5281/zenodo.19904514
 - K. Takahashi, "From AI Capability Growth to Real-Economy Growth: A Semi-Endogenous Model of Physical and Institutional Bottlenecks," 2026. DOI: 10.5281/zenodo.18677068
 - K. Takahashi, "Operational Deductive Rules for Real-Economy Acceleration in the AI Era," 2026. DOI: 10.5281/zenodo.18688712
 

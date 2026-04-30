@@ -27,6 +27,11 @@ dependencies = [
   "streamlit>=1.40",
 ]
 
+[project.urls]
+DOI = "https://doi.org/10.5281/zenodo.19904514"
+Repository = "https://github.com/kadubon/ai-real-economy-bottleneck-simulator"
+"Hosted App" = "https://ai-real-economy-bottleneck-simulator-cnqmwyr7ke6rhyekvbfxzq.streamlit.app/"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=8.3",

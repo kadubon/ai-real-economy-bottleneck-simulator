@@ -4,6 +4,7 @@ It shows when AI capability becomes realized output, and when electricity, grid,
 
 [![CI](https://github.com/kadubon/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/kadubon/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-real-economy-bottleneck-simulator-cnqmwyr7ke6rhyekvbfxzq.streamlit.app/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19904514.svg)](https://doi.org/10.5281/zenodo.19904514)
 
 An Apache-2.0, browser-based research simulator for the question:
 
@@ -223,4 +224,8 @@ This is a research simulation tool. It is not financial, investment, energy-poli
 
 Apache License 2.0. See [LICENSE](LICENSE).
 
-Citation metadata is in [CITATION.cff](CITATION.cff).
+Software DOI:
+
+> ai-real-economy-bottleneck-simulator contributors. (2026). *AI Real-Economy Bottleneck Simulator* (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.19904514
+
+This simulator implements and cites the two Takahashi (2026) papers listed above. Citation metadata is in [CITATION.cff](CITATION.cff).
