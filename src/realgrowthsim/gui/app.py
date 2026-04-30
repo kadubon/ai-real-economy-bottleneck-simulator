@@ -14,6 +14,7 @@ from realgrowthsim.gui.components import (
     label,
     metric_row,
     show_glossary,
+    top_growth_comparison,
 )
 from realgrowthsim.io.export import diagnostics_to_json
 from realgrowthsim.io.report import markdown_report
@@ -49,6 +50,41 @@ def _run(config: ScenarioConfig) -> SimulationResult:
     st.session_state.scenario = config
     st.session_state.result = result
     return result
+
+
+def quick_scenario_bar() -> None:
+    st.subheader("Try One-Click Scenarios")
+    st.caption("Use these first if you only want to understand the model behavior without editing parameters.")
+    presets: dict[str, ScenarioConfig] = st.session_state.presets
+    choices = [
+        (
+            "baseline",
+            "Baseline",
+            "Balanced AI, physical capacity, and institutions.",
+        ),
+        (
+            "information_fast_reflection_slow",
+            "AI fast / bottlenecks slow",
+            "Capability grows quickly, but translation cannot keep up.",
+        ),
+        (
+            "physical_coordination_push",
+            "Physical coordination",
+            "Relieves electricity, grid, materials, cooling, and permitting together.",
+        ),
+        (
+            "resource_trust_shock",
+            "Resource + trust shock",
+            "Adds adverse physical and institutional events.",
+        ),
+    ]
+    cols = st.columns(len(choices))
+    for col, (key, title, description) in zip(cols, choices, strict=True):
+        col.markdown(f"**{title}**")
+        col.caption(description)
+        if col.button("Run", key=f"quick_run_{key}", width="stretch"):
+            _run(copy.deepcopy(presets[key]))
+            st.rerun()
 
 
 def overview_tab(result: SimulationResult) -> None:
@@ -143,55 +179,56 @@ def scenario_builder_tab() -> None:
                 help="Rule used to allocate bounded investment across compute and bottleneck-relief branches.",
             )
         )
+        st.caption("Most users can choose a preset and click Run simulation. Open advanced sections only when you want to edit the model inputs directly.")
 
-        st.markdown("#### Initial State")
-        st.caption("Initial states describe where the simulated economy starts before the first time step.")
-        cols = st.columns(6)
-        for i, name in enumerate(["A", "H", "C", "E", "G", "M"]):
-            setattr(
-                config.initial_state,
-                name,
-                cols[i].number_input(
-                    label(name),
-                    0.0001,
-                    100.0,
-                    float(getattr(config.initial_state, name)),
-                    help=help_text(name),
-                ),
-            )
-        cols = st.columns(6)
-        for i, name in enumerate(["W", "L", "S", "R", "U", "P"]):
-            setattr(
-                config.initial_state,
-                name,
-                cols[i].number_input(
-                    label(name),
-                    0.0001,
-                    1.0 if name in ["S", "R", "U", "P"] else 100.0,
-                    float(getattr(config.initial_state, name)),
-                    help=help_text(name),
-                ),
-            )
+        with st.expander("Advanced: initial state", expanded=False):
+            st.caption("Initial states describe where the simulated economy starts before the first time step.")
+            cols = st.columns(6)
+            for i, name in enumerate(["A", "H", "C", "E", "G", "M"]):
+                setattr(
+                    config.initial_state,
+                    name,
+                    cols[i].number_input(
+                        label(name),
+                        0.0001,
+                        100.0,
+                        float(getattr(config.initial_state, name)),
+                        help=help_text(name),
+                    ),
+                )
+            cols = st.columns(6)
+            for i, name in enumerate(["W", "L", "S", "R", "U", "P"]):
+                setattr(
+                    config.initial_state,
+                    name,
+                    cols[i].number_input(
+                        label(name),
+                        0.0001,
+                        1.0 if name in ["S", "R", "U", "P"] else 100.0,
+                        float(getattr(config.initial_state, name)),
+                        help=help_text(name),
+                    ),
+                )
 
-        st.markdown("#### Core Parameters")
-        st.caption("Core parameters control how fast capability, infrastructure, and institutions move.")
-        c1, c2, c3, c4 = st.columns(4)
-        config.params.information.chi_A = c1.slider("chi_A", 0.0, 0.3, float(config.params.information.chi_A), 0.005, help=help_text("chi_A"))
-        config.params.information.chi_H = c2.slider("chi_H", 0.0, 0.3, float(config.params.information.chi_H), 0.005, help=help_text("chi_H"))
-        config.params.physical.theta_P = c3.slider("theta_P", 0.05, 2.0, float(config.params.physical.theta_P), 0.05, help=help_text("theta_P"))
-        config.params.institutional.risk = c4.slider("Risk", 0.0, 0.5, float(config.params.institutional.risk), 0.01, help=help_text("risk"))
+        with st.expander("Advanced: growth and bottleneck parameters", expanded=False):
+            st.caption("Core parameters control how fast capability, infrastructure, and institutions move.")
+            c1, c2, c3, c4 = st.columns(4)
+            config.params.information.chi_A = c1.slider("chi_A", 0.0, 0.3, float(config.params.information.chi_A), 0.005, help=help_text("chi_A"))
+            config.params.information.chi_H = c2.slider("chi_H", 0.0, 0.3, float(config.params.information.chi_H), 0.005, help=help_text("chi_H"))
+            config.params.physical.theta_P = c3.slider("theta_P", 0.05, 2.0, float(config.params.physical.theta_P), 0.05, help=help_text("theta_P"))
+            config.params.institutional.risk = c4.slider("Risk", 0.0, 0.5, float(config.params.institutional.risk), 0.01, help=help_text("risk"))
 
-        st.markdown("#### Investment Shares")
-        st.caption("Shares allocate the bounded investment flow F across compute and physical bottleneck branches.")
-        cols = st.columns(6)
-        for i, branch in enumerate(["C", "E", "G", "M", "W", "L"]):
-            config.params.investment.fixed_shares[branch] = cols[i].slider(
-                f"s_{branch} ({STATE_CATALOG[branch].name if branch in STATE_CATALOG else branch})",
-                0.0,
-                0.8,
-                float(config.params.investment.fixed_shares.get(branch, 0.0)),
-                0.01,
-                help=f"Fixed share for {branch}. Shares are automatically clipped to floors and s_bar.",
+        with st.expander("Advanced: investment shares", expanded=False):
+            st.caption("Shares allocate the bounded investment flow F across compute and physical bottleneck branches.")
+            cols = st.columns(6)
+            for i, branch in enumerate(["C", "E", "G", "M", "W", "L"]):
+                config.params.investment.fixed_shares[branch] = cols[i].slider(
+                    f"s_{branch} ({STATE_CATALOG[branch].name if branch in STATE_CATALOG else branch})",
+                    0.0,
+                    0.8,
+                    float(config.params.investment.fixed_shares.get(branch, 0.0)),
+                    0.01,
+                    help=f"Fixed share for {branch}. Shares are automatically clipped to floors and s_bar.",
             )
         submitted = st.form_submit_button("Run simulation", width="stretch")
     if submitted:
@@ -418,6 +455,8 @@ def main() -> None:
     result: SimulationResult = st.session_state.result
     st.title("AI Real-Economy Bottleneck Simulator")
     st.caption(DISCLAIMER)
+    quick_scenario_bar()
+    top_growth_slot = st.container()
     tabs = st.tabs(
         [
             "Overview",
@@ -435,6 +474,8 @@ def main() -> None:
     with tabs[1]:
         scenario_builder_tab()
     result = st.session_state.result
+    with top_growth_slot:
+        top_growth_comparison(result)
     with tabs[2]:
         dashboard_tab(result)
     with tabs[3]:

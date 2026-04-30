@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 from realgrowthsim.model.catalog import (
@@ -51,12 +52,66 @@ def show_glossary() -> None:
 def metric_row(result: SimulationResult) -> None:
     summary = result.summary()
     cols = st.columns(5)
-    cols[0].metric("Final YR", f"{summary['final_YR']:.3f}")
-    cols[1].metric("Final gap", f"{summary['final_gap']:.3f}")
+    cols[0].metric("Realized output YR", f"{summary['final_YR']:.3f}")
+    cols[1].metric("Gap YI to YR", f"{summary['final_gap']:.3f}")
     avg = summary["average_speed_ratio"]
-    cols[2].metric("Average v_h", "n/a" if pd.isna(avg) else f"{avg:.3f}")
+    cols[2].metric("Speed ratio v_h", "n/a" if pd.isna(avg) else f"{avg:.3f}")
     cols[3].metric("Max BPI", f"{summary['max_BPI']:.3f}")
-    cols[4].metric("Loss L(T)", f"{summary['cumulative_reflection_loss']:.3f}")
+    cols[4].metric("Lost output L(T)", f"{summary['cumulative_reflection_loss']:.3f}")
+
+
+def top_growth_comparison(result: SimulationResult) -> None:
+    df = result.trace
+    interpretation = interpret_trace(df)
+    st.subheader("AI Capability Growth vs Real-Economy Growth")
+    st.caption(
+        "Horizontal axis is model time. The blue line is information-space potential `YI`; "
+        "the green line is realized real-economy output `YR` after bottlenecks."
+    )
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=df["t"],
+            y=df["YI"],
+            mode="lines",
+            name="YI - information-space AI potential",
+            line=dict(color="#2563eb", width=3),
+            hovertemplate="time=%{x:.2f}<br>YI=%{y:.3f}<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df["t"],
+            y=df["YR"],
+            mode="lines",
+            name="YR - realized real-economy output",
+            line=dict(color="#16a34a", width=3),
+            fill="tonexty",
+            fillcolor="rgba(37, 99, 235, 0.10)",
+            hovertemplate="time=%{x:.2f}<br>YR=%{y:.3f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        height=380,
+        margin=dict(l=10, r=10, t=40, b=10),
+        xaxis_title="Time",
+        yaxis_title="Normalized output index",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+        hovermode="x unified",
+    )
+    st.plotly_chart(fig, width="stretch")
+    st.write(
+        f"Current reading: {100.0 * interpretation.realization_ratio:.1f}% of potential is realized at the horizon. "
+        f"Main drag: **{interpretation.main_drag}**. Active physical branch: **{interpretation.active_bottleneck}**."
+    )
+    with st.expander("How to read this chart", expanded=True):
+        st.markdown(
+            """
+1. Start with the distance between the blue and green lines. A larger shaded area means more AI potential is not becoming real output.
+2. If the green line bends away from the blue line, open **Bottleneck Diagnostics** to see which physical branch is binding.
+3. Use the one-click scenarios above to test whether the gap is caused by fast AI growth, slow physical deployment, institutional drag, or shocks.
+"""
+        )
 
 
 def interpretation_panel(result: SimulationResult) -> None:

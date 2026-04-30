@@ -17,5 +17,11 @@ def test_streamlit_app_renders_current_reading_without_exceptions():
     app = AppTest.from_file("streamlit_app.py")
     app.run(timeout=30)
     texts = [str(node.value) for node in app.subheader]
+    captions = [str(node.value) for node in app.caption]
+    buttons = [str(node.label) for node in app.button]
+    assert "Try One-Click Scenarios" in texts
+    assert "AI Capability Growth vs Real-Economy Growth" in texts
     assert "Current Reading" in texts
+    assert any("without editing parameters" in value for value in captions)
+    assert "Run" in buttons
     assert len(app.exception) == 0

@@ -2,8 +2,8 @@
 This repository turns the Takahashi (2026) AI bottleneck-growth papers into a browser simulator.
 It shows when AI capability becomes realized output, and when electricity, grid, materials, cooling, permitting, trust, regulation, or operations block that translation.
 
-[![CI](https://github.com/OWNER/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://YOUR-CUSTOM-SUBDOMAIN.streamlit.app)
+[![CI](https://github.com/kadubon/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/kadubon/ai-real-economy-bottleneck-simulator/actions/workflows/ci.yml)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-real-economy-bottleneck-simulator-cnqmwyr7ke6rhyekvbfxzq.streamlit.app/)
 
 An Apache-2.0, browser-based research simulator for the question:
 
@@ -30,10 +30,10 @@ The simulator is built to answer scenario questions, not to forecast the world.
 For non-engineers, use the hosted Streamlit Community Cloud app:
 
 ```text
-https://YOUR-CUSTOM-SUBDOMAIN.streamlit.app
+https://ai-real-economy-bottleneck-simulator-cnqmwyr7ke6rhyekvbfxzq.streamlit.app/
 ```
 
-The final URL is added after the public GitHub repository is connected to Streamlit Community Cloud.
+The hosted app runs from the public GitHub repository through Streamlit Community Cloud.
 
 The GUI includes:
 
