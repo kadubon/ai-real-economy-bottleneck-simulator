@@ -39,6 +39,10 @@ from realgrowthsim.sim.stochastic import run_monte_carlo
 def _init_state() -> None:
     if "presets" not in st.session_state:
         st.session_state.presets = preset_configs()
+    if "selected_preset_key" not in st.session_state:
+        st.session_state.selected_preset_key = "baseline"
+    if "loaded_preset_key" not in st.session_state:
+        st.session_state.loaded_preset_key = "baseline"
     if "scenario" not in st.session_state:
         st.session_state.scenario = copy.deepcopy(st.session_state.presets["baseline"])
     if "result" not in st.session_state:
@@ -83,6 +87,8 @@ def quick_scenario_bar() -> None:
         col.markdown(f"**{title}**")
         col.caption(description)
         if col.button("Run", key=f"quick_run_{key}", width="stretch"):
+            st.session_state.selected_preset_key = key
+            st.session_state.loaded_preset_key = key
             _run(copy.deepcopy(presets[key]))
             st.rerun()
 
@@ -145,17 +151,28 @@ def scenario_builder_tab() -> None:
     presets: dict[str, ScenarioConfig] = st.session_state.presets
     config: ScenarioConfig = copy.deepcopy(st.session_state.scenario)
     preset_names = list(presets)
+    if st.session_state.selected_preset_key not in presets:
+        st.session_state.selected_preset_key = "baseline"
+    if st.session_state.loaded_preset_key not in presets:
+        st.session_state.loaded_preset_key = "baseline"
     selected = st.selectbox(
         "Preset scenario",
         preset_names,
         format_func=lambda key: presets[key].name,
-        index=preset_names.index("baseline") if "baseline" in preset_names else 0,
+        index=preset_names.index(st.session_state.selected_preset_key),
+        key="selected_preset_key",
         help="Paper scenario families plus additional stress tests.",
     )
-    col_a, col_b, col_c = st.columns(3)
-    if col_a.button("Reset to preset", width="stretch"):
+    if selected != st.session_state.loaded_preset_key:
         config = copy.deepcopy(presets[selected])
         st.session_state.scenario = config
+        st.session_state.loaded_preset_key = selected
+        st.info("Loaded the selected preset. Click Run simulation to update charts.")
+    col_a, col_b, col_c = st.columns(3)
+    if col_a.button("Reset to selected preset", width="stretch"):
+        config = copy.deepcopy(presets[selected])
+        st.session_state.scenario = config
+        st.session_state.loaded_preset_key = selected
     config = copy.deepcopy(st.session_state.scenario)
 
     with st.form("scenario_form"):

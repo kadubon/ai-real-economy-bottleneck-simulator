@@ -17,7 +17,7 @@ git status --short
 uv run ruff check .
 uv run pytest
 uv run realgrowthsim validate --preset baseline
-uvx pip-audit --path .venv\Lib\site-packages --progress-spinner off
+uvx pip-audit --progress-spinner off
 ```
 
 Expected result:
@@ -39,6 +39,29 @@ Expected result:
 - No default external APIs
 - No telemetry implemented by the app
 - README placeholder URL replaced after deployment
+
+## Latest Strict Audit: 2026-04-30
+
+Results from the final pre-publication audit pass:
+
+- `git status --short`: tracked changes were limited to this audit note and the intentional GUI preset-selection fix.
+- `uv sync --extra dev --locked`: passed.
+- `uv run ruff check .`: passed.
+- `uv run pytest`: passed, 23 tests.
+- `uv run realgrowthsim validate --preset baseline`: passed.
+- `uv run realgrowthsim validate --preset resource_trust_shock`: passed, including event attribution.
+- All ten scenario presets loaded, simulated, and passed identity/bounds checks for `g = gP + gI`, `BPI`, `OmegaP`, `OmegaI`, nonnegative physical states, and institutional bounds.
+- `uvx pip-audit --progress-spinner off`: no known vulnerabilities found.
+- Secret scan excluding `uv.lock`, `.venv`, and this audit document: no matches.
+- Local absolute-path scan excluding `uv.lock` and `.venv`: no matches.
+- Placeholder scan for `OWNER`, `YOUR-CUSTOM-SUBDOMAIN`, `PLACEHOLDER`, `TODO`, `FIXME`, `localhost`, and `127.0.0.1`: no matches in public docs/source/config.
+- `.streamlit/secrets.toml`, `.env`, and `NOTICE`: absent.
+- Generated caches and audit output files should be removed before commit.
+
+Live Streamlit URL check:
+
+- The deployed URL responded through Streamlit's public hosting/auth redirect flow and then returned an HTTP 200 Streamlit page.
+- This confirms host reachability, but a final human browser check is still recommended because Streamlit apps hydrate client-side.
 
 Official deployment references:
 
