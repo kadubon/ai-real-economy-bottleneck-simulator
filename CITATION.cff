@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this simulator, please cite the two papers it implements."
+title: "AI Real-Economy Bottleneck Simulator"
+type: software
+license: Apache-2.0
+version: 0.1.0
+authors:
+  - name: "ai-real-economy-bottleneck-simulator contributors"
+preferred-citation:
+  type: article
+  title: "From AI Capability Growth to Real-Economy Growth: A Semi-Endogenous Model of Physical and Institutional Bottlenecks"
+  authors:
+    - family-names: Takahashi
+      given-names: K.
+  year: 2026
+  doi: 10.5281/zenodo.18677068
+references:
+  - type: article
+    title: "From AI Capability Growth to Real-Economy Growth: A Semi-Endogenous Model of Physical and Institutional Bottlenecks"
+    authors:
+      - family-names: Takahashi
+        given-names: K.
+    year: 2026
+    doi: 10.5281/zenodo.18677068
+  - type: article
+    title: "Operational Deductive Rules for Real-Economy Acceleration in the AI Era: A Machine-Readable Supplement on Physical and Institutional Translation Bottlenecks"
+    authors:
+      - family-names: Takahashi
+        given-names: K.
+    year: 2026
+    doi: 10.5281/zenodo.18688712
